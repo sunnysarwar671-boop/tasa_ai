@@ -16,7 +16,7 @@ app.add_middleware(
 )
 
 client = OpenAI(
-    api_key=os.getenv("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"),
+    api_key=os.getenv("GROQ_API_KEY"),
     base_url="https://api.groq.com/openai/v1"
 )
 
