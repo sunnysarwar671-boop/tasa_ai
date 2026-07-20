@@ -23,6 +23,9 @@ app.add_middleware(
 HISTORY_FILE = "history.json"
 MEMORY_FILE = "memory.json"
 
+# সর্বোচ্চ কতটি message রাখা হবে
+MAX_HISTORY = 20
+
 # ---------------- Groq ----------------
 
 client = OpenAI(
@@ -58,7 +61,6 @@ Use bullet points when appropriate.
 # ---------------- JSON ----------------
 
 def load_json(file):
-
     if not os.path.exists(file):
         return []
 
@@ -67,7 +69,6 @@ def load_json(file):
 
 
 def save_json(file, data):
-
     with open(file, "w", encoding="utf-8") as f:
         json.dump(data, f, indent=4, ensure_ascii=False)
 
@@ -86,15 +87,15 @@ def chat(data: Chat):
 
     messages = [SYSTEM]
 
+    # গুরুত্বপূর্ণ Memory পাঠানো
     if memory:
-
         messages.append({
             "role": "system",
             "content": "Saved Memory:\n\n" + "\n".join(memory)
         })
 
-    # শুধু শেষ ২০টি Message পাঠাবে
-    messages.extend(history[-20:])
+    # শুধু শেষ MAX_HISTORY টি message পাঠাবে
+    messages.extend(history[-MAX_HISTORY:])
 
     messages.append({
         "role": "user",
@@ -108,6 +109,7 @@ def chat(data: Chat):
 
     reply = response.choices[0].message.content
 
+    # নতুন Message Save
     history.append({
         "role": "user",
         "content": data.message
@@ -117,6 +119,9 @@ def chat(data: Chat):
         "role": "assistant",
         "content": reply
     })
+
+    # history.json বড় হতে দেবে না
+    history = history[-MAX_HISTORY:]
 
     save_json(HISTORY_FILE, history)
 
