@@ -47,3 +47,13 @@ button{
 padding:10px;
 
   }
+
+#messages{
+
+    white-space:pre-wrap;
+
+    word-wrap:break-word;
+
+    overflow-wrap:anywhere;
+
+}
